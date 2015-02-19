@@ -199,7 +199,7 @@
   [& body]
   (let [[path key-values] (if (string? (first body))
                             [(first body) (rest body)]
-                            ["/api/api-docs" body])
+                            ["/api/docs" body])
         parameters (apply hash-map key-values)]
     `(routes
        (GET ~path []

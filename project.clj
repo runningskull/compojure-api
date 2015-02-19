@@ -1,25 +1,25 @@
-(defproject metosin/compojure-api "0.18.0-SNAPSHOT"
+(defproject metosin/compojure-api "0.18.0-SNAPSHOT-FORK"
   :description "Compojure Api"
-  :url "https://github.com/metosin/compojure-api"
+  :url "https://github.com/runningskull/compojure-api"
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"
             :distribution :repo
             :comments "same as Clojure"}
   :dependencies [[org.clojure/clojure "1.6.0"]
-                 [prismatic/plumbing "0.3.5"]
+                 [prismatic/plumbing "0.3.7"]
                  [potemkin "0.3.11"]
                  [cheshire "5.4.0"]
-                 [compojure "1.3.1"]
-                 [prismatic/schema "0.3.3"]
+                 [compojure "1.3.2"]
+                 [prismatic/schema "0.3.7"]
                  [metosin/ring-http-response "0.5.2"]
-                 [metosin/ring-swagger "0.15.0"]
+                 [metosin/ring-swagger "0.17.0"]
                  [org.tobereplaced/lettercase "1.0.0"]
                  [metosin/ring-middleware-format "0.6.0-SNAPSHOT"]]
   :profiles {:thingie {:ring {:handler examples.thingie/app
                               :reload-paths ["src" "examples/src"]}
                        :source-paths ["examples/src"]
                        :main examples.server
-                       :dependencies [[metosin/ring-swagger-ui "2.0.24"]
+                       :dependencies [[metosin/ring-swagger-ui "2.1.1-M1"]
                                       [http-kit "2.1.19"]]}
              :uberjar {:aot :all}
              :dev {:ring {:handler examples.handler/app}
