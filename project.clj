@@ -1,4 +1,4 @@
-(defproject metosin/compojure-api "0.18.0-SNAPSHOT-FORK"
+(defproject org.clojars.runningskull/compojure-api "0.18.0-SNAPSHOT-FORK"
   :description "Compojure Api"
   :url "https://github.com/runningskull/compojure-api"
   :license {:name "Eclipse Public License"
