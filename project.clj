@@ -1,4 +1,4 @@
-(defproject org.clojars.runningskull/compojure-api "0.18.0-SNAPSHOT-FORK-2"
+(defproject org.clojars.runningskull/compojure-api "0.18.0-SNAPSHOT-FORK-3"
   :description "Compojure Api"
   :url "https://github.com/runningskull/compojure-api"
   :license {:name "Eclipse Public License"
@@ -12,7 +12,7 @@
                  [compojure "1.3.2"]
                  [prismatic/schema "0.3.7"]
                  [metosin/ring-http-response "0.5.2"]
-                 [org.clojars.runningskull/ring-swagger "0.18.0-SNAPSHOT-FORK"]
+                 [metosin/ring-swagger "0.18.0-SNAPSHOT"]
                  [org.tobereplaced/lettercase "1.0.0"]
                  [metosin/ring-middleware-format "0.6.0-SNAPSHOT"]]
   :profiles {:thingie {:ring {:handler examples.thingie/app
