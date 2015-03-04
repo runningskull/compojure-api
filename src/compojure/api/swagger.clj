@@ -8,8 +8,10 @@
             [plumbing.core :refer [fn->]]
             [potemkin :refer [import-vars]]
             [org.tobereplaced.lettercase :as lc]
+            [ring.util.response :refer [response]]
             [ring.swagger.common :refer :all]
             [ring.swagger.core :as swagger]
+            [ring.swagger.swagger2 :as swag2]
             [ring.swagger.impl :as swagger-impl]
             [ring.swagger.schema :as schema]
             ring.swagger.ui
@@ -182,6 +184,39 @@
         details (assoc parameters :routes routes)]
     [details body]))
 
+(defn swagger2-responses [route]
+  (let [route-meta (:metadata route)
+        return (:return route-meta)
+        msgs (:responseMessages route-meta)]
+    (into
+     {200 {:description "ok" :schema return}}
+     (for [msg msgs]
+       [(:code msg)
+        {:description (:message msg)
+         :schema (:responseModel msg)}]))))
+
+(defn swagger2-meta [route]
+  (dissoc (:metadata route) :return :parameters))
+
+(defn swagger2-parameters [params]
+  (apply merge
+         (for [param params]
+           {(:type param) (:model param)})))
+
+(defn ->swagger2-paths [routes]
+  (apply
+   merge-with
+   merge
+   (for [route routes]
+     (let [route-meta (swagger2-meta route)]
+       {(:uri route)
+        {(:method route)
+         (merge
+          route-meta
+          {:parameters (swagger2-parameters (:parameters route))
+           :responses (swagger2-responses route)})}})))
+  )
+
 ;;
 ;; Public api
 ;;
@@ -191,7 +226,7 @@
 (defmacro swagger-docs
   "Route to serve the swagger api-docs. If the first
    parameter is a String, it is used as a url for the
-   api-docs, othereise \"/api/api-docs\" will be used.
+   api-docs, otherwise \"/api/api-docs\" will be used.
    Next Keyword value pairs for meta-data. Valid keys:
 
    :title :description :termsOfServiceUrl
@@ -202,14 +237,24 @@
                             ["/api/docs" body])
         parameters (apply hash-map key-values)]
     `(routes
-       (GET ~path []
-            (swagger/api-listing ~parameters @~routes/+routes-sym+))
        (GET ~(str path "/:api") {{api# :api} :route-params :as request#}
             (let [produces# (-> request# :meta :produces (or []))
                   consumes# (-> request# :meta :consumes (or []))
                   parameters# (merge ~parameters {:produces produces#
-                                                  :consumes consumes#})]
-              (swagger/api-declaration parameters# @~routes/+routes-sym+ api# (swagger/basepath request#)))))))
+                                                  :consumes consumes#})
+                  routes# (get-in @~routes/+routes-sym+ [api# :routes])]
+              (response
+               (swag2/swagger-json
+                (merge {:info {:title api#}
+                        :basePath (swagger/basepath request#)
+                        :produces produces#
+                        :consumes consumes#
+                        :paths (->swagger2-paths routes#)}
+                       ~parameters)))
+              ;; (swagger/api-declaration parameters# @~routes/+routes-sym+ api# (swagger/basepath request#))
+              )))))
+
+
 
 (defmacro swaggered
   "Defines a swagger-api. Takes api-name, optional
